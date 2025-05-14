@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login – GCInsights</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Times New Roman', serif;
+      background-color: #e6f2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .wrapper {
+      display: flex;
+      max-width: 960px;
+      width: 100%;
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-form {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .login-form h2 {
+      font-size: 28px;
+      color: #195187;
+      margin-bottom: 8px;
+    }
+
+    .login-form p {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .login-form label {
+      display: block;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    .login-form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 13px;
+      color: #195187;
+    }
+
+    .login-form .forgot {
+      text-align: right;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .login-form .forgot a {
+      color: #267DF4;
+      text-decoration: none;
+    }
+
+    .login-form .forgot a:hover {
+      text-decoration: underline;
+    }
+
+    .login-form button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      background-color: #267DF4;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .or-divider {
+      margin: 25px 0;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+      position: relative;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background-color: #ccc;
+    }
+
+    .or-divider::before {
+      left: 0;
+    }
+
+    .or-divider::after {
+      right: 0;
+    }
+
+    .social-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+
+    .social-buttons button {
+      flex: 1;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .social-buttons img {
+      height: 20px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    .register-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .register-text a {
+      color: #267DF4;
+      text-decoration: none;
+    }
+
+    .register-text a:hover {
+      text-decoration: underline;
+    }
+
+    .image-side {
+      flex: 1;
+      background: url("{{ url_for('static', filename='images/gcinsights-bg.jpg') }}") center/cover no-repeat;
+    }
+
+    .flash-message {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .flash-success {
+      color: green;
+    }
+
+    .flash-error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div onclick="window.location.href='{{ url_for('start') }}'" style="position: absolute; cursor: pointer; top: 20px; left: 20px; font-size: 24px; font-weight: bold; color: #195187; font-family: 'Times New Roman', Times, serif;">
+GCInsights 
+</div>
+
+
+
+  <div class="wrapper">
+    <div class="login-form">
+      <h2>Login</h2>
+      <p>Welcome! Please enter your details</p>
+
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash-message {{ 'flash-success' if category == 'success' else 'flash-error' }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="/login">
+        <label>Email</label>
+        <input type="text" name="email" placeholder="Enter your email or username" required>
+
+        <label>Password</label>
+        <div class="password-container">
+          <input type="password" name="password" id="password-field" placeholder="Enter your password" required>
+          <span class="toggle-password" onclick="togglePassword()">Show</span>
+        </div>
+
+        <div class="forgot">
+          <a href="/forgot-password">Forgot password?</a>
+        </div>
+
+        <button type="submit">Log in</button>
+
+        <div class="register-text">
+          Don’t have an account? <a href="/signup">Sign up</a>
+        </div>
+      </form>
+    </div>
+    <div class="image-side"></div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById("password-field");
+      const toggle = document.querySelector(".toggle-password");
+      if (input.type === "password") {
+        input.type = "text";
+        toggle.textContent = "Hide";
+      } else {
+        input.type = "password";
+        toggle.textContent = "Show";
+      }
+    }
+  </script>
+</body>
+</html>
